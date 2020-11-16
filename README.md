@@ -1,33 +1,38 @@
 # Debian-on-NAS326
 HOW TO install Debian on Zyxel NAS326
 
-This guide is TL;DR ("short way") of instructions available at https://forum.doozan.com/read.php?2,88619 written by user bodhi. All credit for hacking and installing Debian on this box should go to him. It is advised to follow above link for further details or troubleshooting. 
+This guide is TL;DR ("short way") of instructions available [here](https://forum.doozan.com/read.php?2,88619) written by user bodhi. All credit for hacking and installing Debian on this box should go to him. It is advised to follow above link for further details or troubleshooting. 
 
 Prerequisitions:
 - Zyxel NAS326
 - PC/laptop with Debian installed
 - pendrive (note: not every flash drive will work, if your system won't boot try another one)
 
-NOTE: Data stored on internal disks reamain unaffected during the process, so there is a little need to backup them. If something fails, just unplug front usb port, power off machine for few seconds and boot again. Failsafe system image from NAND memory will boot and all settings will be reset.
+NOTE: Data stored on internal disks remain unaffected during the process, so there is a little need for backup them. If something fails, just unplug front usb port, power off machine for few seconds and boot again. Failsafe system image from NAND memory will boot and all settings will be reset.
 
-1. Prepare pendrive with gparted. Create one partition on whole device and format it to ext3, label it as rootfs. Mount.
++ Prepare pendrive with ```gparted```. Create one partition covering whole device and format it to ext3, label it as _rootfs_. Mount it.
 
-2. Install package u-boot-tools on your Debian box.
++ Install package ```u-boot-tools``` on your Debian box.
 
-3. Download archive https://www.dropbox.com/s/nkvtlkd9le4ujen/Debian-4.9.0-mvebu-tld-12-rootfs-bodhi.tar.bz2
++ Download archive from [here](https://www.dropbox.com/s/nkvtlkd9le4ujen/Debian-4.9.0-mvebu-tld-12-rootfs-bodhi.tar.bz2)
 
-4. Untar it as user root on prepared pendrive with tar -xjf 
++ Untar it as user root on prepared pendrive with ```tar -xjf``` 
 
-5. Add following line to fstab on pendrive
++ Add following line to fstab on pendrive:
+```
 LABEL=rootfs	/	ext3	noatime,errors=remount-ro	0	1
+```
++ Umoumnt pendrive and insert in into front usb 2.0 port on NAS326
 
-6. Umoumnt pendrive and insert into fron usb 2.0 port on NAS326
++ Connect via ssh to NAS326 with your admin credentials (you might need to enable ssh service on NAS326: Control panel - Network - Terminal)
 
-7. Connect via ssh to NAS326 with your admin credentials (you might need to enable ssh service on NAS326: Control panel - Network - Terminal)
++ Store output of command ```fw_printenv```. You can use internal disks mounted somewhere uder /i-data or pendrive (if already inserted) somewhere under /e-data, i.e.:
+```
+fw_printenv > /i-data/0123456789ABCDEF/fw_printenv-original.txt
+```
 
-8. Store output of command fw_printenv. You can use internal disks mounted somewhere uder /i-data or pendrive (if already inserted) somewhere under /e-data, i.e.: fw_printenv > /i-data/0123456789ABCDEF/fw_printenv-original.txt
-
-9. Apply new settings:
++ Apply new settings:
+```
 fw_setenv curr_bootfrom 1
 fw_setenv next_bootfrom 1
 fw_setenv load_dtb_addr 0x1000000
@@ -42,12 +47,12 @@ fw_setenv usb_bootcmd 'echo Booting from USB ...; setenv fdt_skip_update yes; ru
 fw_setenv bootcmd_custom 'if run usb_bootcmd; then; else if run bootcmd_stock_1; then; else run bootcmd_stock_2; reset; fi; fi'
 fw_setenv kernel_addr_1 '0x00000000; run bootcmd_custom; '
 fw_setenv change_boot_part 1
+```
++ Store output of ```fw_printenv``` again, just in case.
 
-10. Store output of fw_printenv again, just in case.
++ Reboot NAS326.
 
-11. Reboot NAS326.
++ Your 'new' Debian 8.0 Jessie should emerge on your LAN with hostname 'debian'. You can locate it using your router software or simply ```nmap -sP 192.168.1.1/24 | grep debian```
 
-12. Your 'new' Debian 8.0 Jessie should emerge on your LAN with hostname 'debian'. You can locate it using your router software or simply nmap -sP 192.168.1.1/24 | grep debian
-
-13. Login via ssh with user root and password root
++ Login via ssh with user root and password root
 
