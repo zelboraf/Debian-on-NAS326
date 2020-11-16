@@ -22,11 +22,11 @@ NOTE: Data stored on internal disks remain unaffected during the process, so the
 ```
 LABEL=rootfs	/	ext3	noatime,errors=remount-ro	0	1
 ```
-+ Umoumnt pendrive and insert in into front usb 2.0 port on NAS326
++ Umoumnt pendrive and insert it into front usb 2.0 port on NAS326
 
 + Connect via ssh to NAS326 with your admin credentials (you might need to enable ssh service on NAS326: Control panel - Network - Terminal)
 
-+ Store output of command ```fw_printenv```. You can use internal disks mounted somewhere uder /i-data or pendrive (if already inserted) somewhere under /e-data, i.e.:
++ Store output of command ```fw_printenv```. You can use internal disks mounted somewhere uder _/i-data_ or pendrive (if already inserted) somewhere under _/e-data_, e.g.:
 ```
 fw_printenv > /i-data/0123456789ABCDEF/fw_printenv-original.txt
 ```
@@ -48,11 +48,10 @@ fw_setenv bootcmd_custom 'if run usb_bootcmd; then; else if run bootcmd_stock_1;
 fw_setenv kernel_addr_1 '0x00000000; run bootcmd_custom; '
 fw_setenv change_boot_part 1
 ```
-+ Store output of ```fw_printenv``` again, just in case.
 
 + Reboot NAS326.
 
-+ Your 'new' Debian 8.0 Jessie should emerge on your LAN with hostname 'debian'. You can locate it using your router software or simply ```nmap -sP 192.168.1.1/24 | grep debian```
++ Your 'new' Debian 8.0 Jessie should emerge somewhere on your LAN with hostname 'debian'. You can locate it using your router software or simply use ```nmap -sP 192.168.1.1/24 | grep debian```
 
-+ Login via ssh with user root and password root
++ Login via ssh with username _root_ and password _root_
 
